@@ -8,3 +8,64 @@ dependencies = []
 # Use only uv-downloaded Pythons: identical interpreter on every machine and in CI,
 # and immune to stray system Pythons (MSYS2, Chocolatey, Microsoft Store) on PATH.
 python-preference = "only-managed"
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.1",
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.5.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.5",
+]
+
+# ---------------------------------------------------------------- Ruff
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle: basic style errors
+    "F",        # pyflakes: unused imports/variables, undefined names
+    "I",        # isort: import ordering
+    "UP",       # pyupgrade: use modern Python 3.12 syntax
+    "B",        # bugbear: likely bugs (mutable default args, etc.)
+    "SIM",      # simplify: needlessly complex code
+    "C4",       # comprehensions: cleaner list/dict/set building
+    "N",        # pep8-naming
+    "ASYNC",    # async pitfalls, e.g. blocking calls inside async functions
+    "S",        # bandit: security issues (hardcoded secrets, unsafe calls)
+    "PT",       # pytest style
+    "RUF",      # Ruff's own rules
+]
+
+[tool.ruff.lint.isort]
+# Enforces CLAUDE.md's "from __future__ import annotations at the top of every module".
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]  # S101 bans assert; pytest tests are built on assert
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.12"
+strict = true
+# strict doesn't ban writing `Any` explicitly; CLAUDE.md does, so turn it on.
+disallow_any_explicit = true
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]           # lets tests `import app` without installing the package
+asyncio_mode = "auto"        # async test functions run without a per-test decorator
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-ra --strict-markers"
+
+# ---------------------------------------------------------------- coverage
+[tool.coverage.run]
+source = ["app"]
+branch = true                # count both sides of every if/else, not just lines
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
