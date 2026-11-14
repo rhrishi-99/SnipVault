@@ -1,0 +1,10 @@
+[project]
+name = "snipvault"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv]
+# Use only uv-downloaded Pythons: identical interpreter on every machine and in CI,
+# and immune to stray system Pythons (MSYS2, Chocolatey, Microsoft Store) on PATH.
+python-preference = "only-managed"
